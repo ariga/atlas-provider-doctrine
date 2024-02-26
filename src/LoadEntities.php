@@ -1,16 +1,15 @@
 <?php
 
-require_once 'vendor/autoload.php';
-
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\ORM\ORMSetup;
 use Doctrine\ORM\Tools\SchemaTool;
+use Doctrine\DBAL\Schema\PostgreSqlSchemaManager;
 use Doctrine\ORM\EntityManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
-use Doctrine\DBAL\Schema\PostgreSqlSchemaManager;
+
 
 class DialectsMapping
 {
@@ -57,17 +56,13 @@ class DialectsMapping
 
 
 
-// MockEntityManager to use the MockConnection
-class MockEntityManager extends EntityManager
+class MockPostgreSqlSchemaManager extends PostgreSqlSchemaManager
 {
-    public function getConnection(): Connection
+    public function determineCurrentSchema(): string
     {
-        $conn = parent::getConnection();
-        return new MockConnection($conn->getParams(), $conn->getDriver(), $conn->getConfiguration());
+        return 'public';
     }
-
 }
-
 
 
 // MockConnection to use Connection without connecting to a real database
@@ -94,12 +89,15 @@ class MockConnection extends Connection
     }
 }
 
-class MockPostgreSqlSchemaManager extends PostgreSqlSchemaManager
+// MockEntityManager to use the MockConnection
+class MockEntityManager extends EntityManager
 {
-    public function determineCurrentSchema(): string
+    public function getConnection(): Connection
     {
-        return 'public';
+        $conn = parent::getConnection();
+        return new MockConnection($conn->getParams(), $conn->getDriver(), $conn->getConfiguration());
     }
+
 }
 
 // DumpDDL of the schema in the given path with the given dialect
