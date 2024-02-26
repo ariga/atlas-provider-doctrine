@@ -121,9 +121,11 @@ function DumpDDL(array $paths, string $dialect): string
     $driver = $dialects[$dialect];
     DialectsMapping::getInstance()->setCurrentDriver($driver);
 
-    $connection = DriverManager::getConnection([
+    $connection = DriverManager::getConnection(
+        [
         'driver' => $driver,
-    ], $config);
+        ], $config
+    );
     $entityManager = new MockEntityManager($connection, $config);
     $metadatas = $entityManager->getMetadataFactory()->getAllMetadata();
 
