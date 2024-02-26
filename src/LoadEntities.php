@@ -39,6 +39,7 @@ class DialectsMapping
     {
         return $this->dialects;
     }
+
     public function setCurrentDriver(string $driver): void
     {
         if (!in_array($driver, $this->dialects)) {
