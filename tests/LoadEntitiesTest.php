@@ -1,8 +1,11 @@
 <?php
 
+require 'vendor/autoload.php';
+
 use PHPUnit\Framework\TestCase;
 
 require "src/LoadEntities.php";
+
 
 final class LoadEntitiesTest extends TestCase
 {
