@@ -1,7 +1,5 @@
 <?php
 
-namespace Atlas\Provider;
-
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
