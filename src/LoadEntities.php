@@ -5,7 +5,7 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\ORM\ORMSetup;
 use Doctrine\ORM\Tools\SchemaTool;
-use Doctrine\DBAL\Schema\PostgreSqlSchemaManager;
+use Doctrine\DBAL\Schema\PostgreSQLSchemaManager;
 use Doctrine\ORM\EntityManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
@@ -56,7 +56,7 @@ class DialectsMapping
 
 
 
-class MockPostgreSqlSchemaManager extends PostgreSqlSchemaManager
+class MockPostgreSQLSchemaManager extends PostgreSQLSchemaManager
 {
     public function determineCurrentSchema(): string
     {
@@ -73,7 +73,7 @@ class MockConnection extends Connection
         $dialects = DialectsMapping::getInstance()->getDialects();
         $driver = DialectsMapping::getInstance()->getCurrentDriver();
         if ($driver === $dialects['postgres']) {
-            return new MockPostgreSqlSchemaManager($this, $this->getDatabasePlatform());
+            return new MockPostgreSQLSchemaManager($this, $this->getDatabasePlatform());
         }
         return parent::createSchemaManager();
     }
@@ -121,9 +121,11 @@ function DumpDDL(array $paths, string $dialect): string
     $driver = $dialects[$dialect];
     DialectsMapping::getInstance()->setCurrentDriver($driver);
 
-    $connection = DriverManager::getConnection([
+    $connection = DriverManager::getConnection(
+        [
         'driver' => $driver,
-    ], $config);
+        ], $config
+    );
     $entityManager = new MockEntityManager($connection, $config);
     $metadatas = $entityManager->getMetadataFactory()->getAllMetadata();
 
