@@ -6,7 +6,5 @@ require "src/Command.php";
 use Symfony\Component\Console\Application;
 
 $cli = new Application();
-$cli->setCatchExceptions(true);
-
 $cli->add(new AtlasCommand());
 $cli->run();
