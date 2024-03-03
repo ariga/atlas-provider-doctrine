@@ -2,8 +2,6 @@
 
 use PHPUnit\Framework\TestCase;
 
-require "src/Command.php";
-
 final class CommandTest extends TestCase
 {
 

@@ -1,8 +1,8 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-
 require "src/LoadEntities.php";
+use function Atlas\Provider\DumpDDL;
 
 final class LoadEntitiesTest extends TestCase
 {

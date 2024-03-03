@@ -2,9 +2,10 @@
 <?php
 
 require_once "vendor/autoload.php";
-require "src/Command.php";
+
+use Atlas\Provider\Command;
 use Symfony\Component\Console\Application;
 
 $cli = new Application();
-$cli->add(new AtlasCommand());
+$cli->add(new Command());
 $cli->run();

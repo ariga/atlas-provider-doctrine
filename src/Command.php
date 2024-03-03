@@ -1,6 +1,9 @@
 <?php
 
-use Symfony\Component\Console\Command\Command;
+namespace Atlas\Provider;
+
+use Exception;
+use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -10,7 +13,7 @@ require "LoadEntities.php";
 
 // AtlasCommand dump the sql of doctrine entities similar to the doctrine command: orm:schema-tool:create --dump-sql
 // but without requiring a real database connection
-class AtlasCommand extends Command
+class Command extends SymfonyCommand
 {
     protected function configure(): void
     {
