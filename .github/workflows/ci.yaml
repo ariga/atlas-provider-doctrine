@@ -39,3 +39,35 @@ jobs:
         run: composer install
       - name: Lint code
         run: ./vendor/bin/phpcbf -n src
+  integration-tests:
+    strategy:
+      matrix:
+        dialect: [ mysql, postgres, sqlite ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+      - name: Validate composer.json and composer.lock
+        run: composer validate
+      - name: Install dependencies
+        run: composer install
+      - name: Install atlas
+        uses: ariga/setup-atlas@master
+      - name: Run migrate diff
+        run: |
+          atlas migrate diff --env doctrine --config file://tests/atlas.hcl --var dialect=${{ matrix.dialect }}
+        env:
+          ATLAS_TOKEN: ${{ secrets.ATLAS_TOKEN }}
+      - name: Verify migrations generated
+        run: |
+          status=$(git status . --porcelain)
+          if [ -n "$status" ]; then
+            echo "you need to run 'atlas migrate diff --env doctrine and commit the changes"
+            echo "$status"
+            git --no-pager diff
+            exit 1
+           fi
