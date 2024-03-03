@@ -23,6 +23,7 @@ class DialectsMapping
             'mysql' => 'pdo_mysql',
             'postgres' => 'pdo_pgsql',
             'sqlite' => 'pdo_sqlite',
+            'sqlserver' => 'pdo_sqlsrv',
         ];
     }
 

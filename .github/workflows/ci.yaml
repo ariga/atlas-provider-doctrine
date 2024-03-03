@@ -42,7 +42,7 @@ jobs:
   integration-tests:
     strategy:
       matrix:
-        dialect: [ mysql, postgres, sqlite ]
+        dialect: [ mysql, postgres, sqlite, sqlserver ]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
