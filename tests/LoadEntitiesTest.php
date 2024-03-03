@@ -2,7 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 
-require "src/LoadEntities.php";
+require_once "src/LoadEntities.php";
 
 final class LoadEntitiesTest extends TestCase
 {

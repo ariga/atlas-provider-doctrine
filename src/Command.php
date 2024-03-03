@@ -27,7 +27,7 @@ class AtlasCommand extends Command
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Path to the entities directory',
-                __DIR__."/src"
+                getcwd()."/src"
             )
             ->setDescription('Dumps the SQL describing the entities schema to the console');
     }
