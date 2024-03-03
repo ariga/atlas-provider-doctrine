@@ -20,7 +20,7 @@ jobs:
       - name: Validate composer.json and composer.lock
         run: composer validate
       - name: Install dependencies
-        run: composer install --no-suggest
+        run: composer install
       - name: Run tests
         run: ./vendor/bin/phpunit tests
   lint:
@@ -36,6 +36,6 @@ jobs:
       - name: Validate composer.json and composer.lock
         run: composer validate
       - name: Install dependencies
-        run: composer install --no-suggest
+        run: composer install
       - name: Lint code
         run: ./vendor/bin/phpcbf -n src
