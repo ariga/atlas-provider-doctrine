@@ -1,0 +1,40 @@
+name: Publish to packagist
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        type: string
+        description: Version to publish, e.g. "v0.1.2"
+        required: false
+  push:
+    tags:
+      - 'v*.*.*'
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer
+      - name: Validate composer.json and composer.lock
+        run: composer validate
+      - name: Install dependencies
+        run: composer install
+      - name: Set version env
+        id: set_version
+        ## if version is not provided as input, use the tag name
+        run: |
+          echo "tag=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          if [ -z "${{ github.event.inputs.version }}" ]; then
+              echo "tag=${{ github.ref }}" >> $GITHUB_OUTPUT
+          fi
+      - name: Set the package version
+        run: composer config version ${{ steps.set_version.outputs.tag }}
+      - name: Publish to packagist
+        run: |
+          curl -X POST -H 'content-type:application/json' 'https://packagist.org/api/update-package?username=ronenlu&apiToken=${{ secrets.PACKAGIST_TOKEN }}' \
+          -d '{ "repository" :{ "url": "https://packagist.org/packages/ariga/atlas-provider-doctrine" }}'
