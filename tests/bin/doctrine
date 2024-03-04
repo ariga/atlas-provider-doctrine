@@ -1,0 +1,10 @@
+#!/usr/bin/env php
+<?php
+
+require_once "vendor/autoload.php";
+require "src/Command.php";
+use Symfony\Component\Console\Application;
+
+$cli = new Application();
+$cli->add(new AtlasCommand());
+$cli->run();
