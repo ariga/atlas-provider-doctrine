@@ -132,5 +132,8 @@ function DumpDDL(array $paths, string $dialect): string
 
     $schemaTool = new SchemaTool($entityManager);
     $sql = $schemaTool->getCreateSchemaSql($metadatas);
+    if (count($sql) === 0) {
+        return '';
+    }
     return implode(";\n", $sql).";";
 }
