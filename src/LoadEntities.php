@@ -1,22 +1,18 @@
 <?php
 
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\Platforms\MySQLPlatform;
-use Doctrine\DBAL\Platforms\MariaDBPlatform;
+use Doctrine\DBAL\Schema\SchemaConfig;
 use Doctrine\ORM\ORMSetup;
 use Doctrine\ORM\Tools\SchemaTool;
-use Doctrine\DBAL\Schema\PostgreSQLSchemaManager;
 use Doctrine\ORM\EntityManager;
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
-
 
 class DialectsMapping
 {
     private static ?DialectsMapping $instance = null;
     private array $dialects;
-    private string $currentDialect;
 
     private function __construct()
     {
@@ -43,25 +39,33 @@ class DialectsMapping
         return $this->dialects;
     }
 
-    public function setCurrentDialect(string $dialect): void
-    {
-        $this->currentDialect = $dialect;
-    }
-
-    public function getCurrentDialect(): string
-    {
-        return $this->currentDialect;
-    }
-
 }
 
-
-
-class MockPostgreSQLSchemaManager extends PostgreSQLSchemaManager
+class MockAbstractSchemaManager extends AbstractSchemaManager
 {
-    public function determineCurrentSchema(): string
+    public function createSchemaConfig(): SchemaConfig
     {
-        return 'public';
+        $schemaConfig = new SchemaConfig();
+        $schemaConfig->setMaxIdentifierLength($this->_platform->getMaxIdentifierLength());
+
+        $params = $this->_conn->getParams();
+        if (! isset($params['defaultTableOptions'])) {
+            $params['defaultTableOptions'] = [];
+        }
+
+        if (! isset($params['defaultTableOptions']['charset']) && isset($params['charset'])) {
+            $params['defaultTableOptions']['charset'] = $params['charset'];
+        }
+
+        $schemaConfig->setDefaultTableOptions($params['defaultTableOptions']);
+
+        return $schemaConfig;
+    }
+
+
+    protected function _getPortableTableColumnDefinition($tableColumn)
+    {
+
     }
 }
 
@@ -69,26 +73,22 @@ class MockPostgreSQLSchemaManager extends PostgreSQLSchemaManager
 // MockConnection to use Connection without connecting to a real database
 class MockConnection extends Connection
 {
+    private ?AbstractPlatform $platform = null;
     public function createSchemaManager(): AbstractSchemaManager
     {
-        $dialect = DialectsMapping::getInstance()->getCurrentDialect();
-        if ($dialect === 'postgres') {
-            return new MockPostgreSQLSchemaManager($this, $this->getDatabasePlatform());
-        }
-        return parent::createSchemaManager();
+        return new MockAbstractSchemaManager($this, $this->getDatabasePlatform());
     }
 
-    public function getDatabasePlatform(): AbstractPlatform
+    public function getDatabasePlatform(): ?AbstractPlatform
     {
-        $dialect = DialectsMapping::getInstance()->getCurrentDialect();
-        if ($dialect === 'mysql') {
-            return new MySQLPlatform();
+        if ($this->platform === null) {
+            $this->platform = $this->_driver->getDatabasePlatform();
+            $this->platform->setEventManager($this->_eventManager);
+            $this->platform->setDisableTypeComments($this->_config->getDisableTypeComments());
         }
-        if ($dialect === 'mariadb') {
-            return new MariaDBPlatform();
-        }
-        return parent::getDatabasePlatform();
+        return $this->platform;
     }
+
 }
 
 // MockEntityManager to use the MockConnection
@@ -102,6 +102,7 @@ class MockEntityManager extends EntityManager
 
 }
 
+
 // DumpDDL of the schema in the given path with the given dialect
 function DumpDDL(array $paths, string $dialect): string
 {
@@ -109,7 +110,6 @@ function DumpDDL(array $paths, string $dialect): string
     if (!in_array($dialect, array_keys($drivers))) {
         throw new \InvalidArgumentException('Invalid dialect: '.$dialect);
     }
-    DialectsMapping::getInstance()->setCurrentDialect($dialect);
     for ($i = 0; $i < count($paths); $i++) {
         $path = $paths[$i];
         if (!is_dir($path)) {
@@ -123,9 +123,7 @@ function DumpDDL(array $paths, string $dialect): string
     );
     $driver = $drivers[$dialect];
     $connection = DriverManager::getConnection(
-        [
-        'driver' => $driver,
-        ], $config
+        ['driver' => $driver], $config
     );
     $entityManager = new MockEntityManager($connection, $config);
     $metadatas = $entityManager->getMetadataFactory()->getAllMetadata();
