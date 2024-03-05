@@ -1,6 +1,6 @@
 # atlas-provider-doctrine
 
-Load [Doctrine](https://www.doctrine-project.org/) entities into an [Atlas](https://atlasgo.io) project.
+Load [Doctrine 3](https://www.doctrine-project.org/) entities into an [Atlas](https://atlasgo.io) project.
 
 ### Use-cases
 1. **Declarative migrations** - use a Terraform-like `atlas schema apply --env doctrine` to apply your Doctrine schema to the database.
