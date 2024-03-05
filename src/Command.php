@@ -14,12 +14,13 @@ class AtlasCommand extends Command
 {
     protected function configure(): void
     {
+        $dialects = DialectsMapping::getInstance()->getDialects();
         $this->setName('atlas:dump-sql')
             ->addOption(
                 'dialect',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Select the DB dialect to use: "mysql", "postgres", "sqlite"',
+                'Select the DB dialect to use: '.implode(', ', array_keys($dialects)),
                 "mysql"
             )
             ->addOption(

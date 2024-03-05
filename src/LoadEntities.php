@@ -3,6 +3,7 @@
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
+use Doctrine\DBAL\Platforms\MariaDBPlatform;
 use Doctrine\ORM\ORMSetup;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\DBAL\Schema\PostgreSQLSchemaManager;
@@ -15,14 +16,16 @@ class DialectsMapping
 {
     private static ?DialectsMapping $instance = null;
     private array $dialects;
-    private string $currentDriver;
+    private string $currentDialect;
 
     private function __construct()
     {
         $this->dialects = [
             'mysql' => 'pdo_mysql',
+            'mariadb' => 'pdo_mysql',
             'postgres' => 'pdo_pgsql',
             'sqlite' => 'pdo_sqlite',
+            'sqlserver' => 'pdo_sqlsrv',
         ];
     }
 
@@ -40,18 +43,16 @@ class DialectsMapping
         return $this->dialects;
     }
 
-    public function setCurrentDriver(string $driver): void
+    public function setCurrentDialect(string $dialect): void
     {
-        if (!in_array($driver, $this->dialects)) {
-            throw new \InvalidArgumentException('Invalid driver: '.$driver);
-        }
-        $this->currentDriver = $driver;
+        $this->currentDialect = $dialect;
     }
 
-    public function getCurrentDriver(): string
+    public function getCurrentDialect(): string
     {
-        return $this->currentDriver;
+        return $this->currentDialect;
     }
+
 }
 
 
@@ -70,9 +71,8 @@ class MockConnection extends Connection
 {
     public function createSchemaManager(): AbstractSchemaManager
     {
-        $dialects = DialectsMapping::getInstance()->getDialects();
-        $driver = DialectsMapping::getInstance()->getCurrentDriver();
-        if ($driver === $dialects['postgres']) {
+        $dialect = DialectsMapping::getInstance()->getCurrentDialect();
+        if ($dialect === 'postgres') {
             return new MockPostgreSQLSchemaManager($this, $this->getDatabasePlatform());
         }
         return parent::createSchemaManager();
@@ -80,10 +80,12 @@ class MockConnection extends Connection
 
     public function getDatabasePlatform(): AbstractPlatform
     {
-        $dialects = DialectsMapping::getInstance()->getDialects();
-        $driver = DialectsMapping::getInstance()->getCurrentDriver();
-        if ($driver === $dialects['mysql']) {
+        $dialect = DialectsMapping::getInstance()->getCurrentDialect();
+        if ($dialect === 'mysql') {
             return new MySQLPlatform();
+        }
+        if ($dialect === 'mariadb') {
+            return new MariaDBPlatform();
         }
         return parent::getDatabasePlatform();
     }
@@ -103,10 +105,11 @@ class MockEntityManager extends EntityManager
 // DumpDDL of the schema in the given path with the given dialect
 function DumpDDL(array $paths, string $dialect): string
 {
-    $dialects = DialectsMapping::getInstance()->getDialects();
-    if (!in_array($dialect, array_keys($dialects))) {
+    $drivers = DialectsMapping::getInstance()->getDialects();
+    if (!in_array($dialect, array_keys($drivers))) {
         throw new \InvalidArgumentException('Invalid dialect: '.$dialect);
     }
+    DialectsMapping::getInstance()->setCurrentDialect($dialect);
     for ($i = 0; $i < count($paths); $i++) {
         $path = $paths[$i];
         if (!is_dir($path)) {
@@ -118,9 +121,7 @@ function DumpDDL(array $paths, string $dialect): string
         paths: $paths,
         isDevMode: true,
     );
-    $driver = $dialects[$dialect];
-    DialectsMapping::getInstance()->setCurrentDriver($driver);
-
+    $driver = $drivers[$dialect];
     $connection = DriverManager::getConnection(
         [
         'driver' => $driver,
@@ -131,5 +132,8 @@ function DumpDDL(array $paths, string $dialect): string
 
     $schemaTool = new SchemaTool($entityManager);
     $sql = $schemaTool->getCreateSchemaSql($metadatas);
+    if (count($sql) === 0) {
+        return '';
+    }
     return implode(";\n", $sql).";";
 }
