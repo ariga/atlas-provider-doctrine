@@ -2,6 +2,7 @@
     "name": "ariga/atlas-provider-doctrine",
     "description": "Atlas provider for PHP doctrine ORM",
     "type": "library",
+    "license": "Apache-2.0",
     "require": {
         "doctrine/orm": "^2.11.0",
         "doctrine/dbal": "^3.2",

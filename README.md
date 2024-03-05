@@ -17,7 +17,7 @@ See [atlasgo.io](https://atlasgo.io/getting-started#installation) for more insta
 
 Install the provider by running:
 ```bash
-composer require ariga/atlas-provider-doctrine
+composer require ariga/atlas-provider-doctrine:v2
 ```
 
 #### Doctrine Console Command
