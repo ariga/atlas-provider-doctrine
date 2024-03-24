@@ -4,9 +4,8 @@
     "type": "library",
     "license": "Apache-2.0",
     "require": {
-        "doctrine/orm": "^2.11.0",
+        "doctrine/orm": "^2.11.0|^3",
         "doctrine/dbal": "^3.2",
-        "symfony/yaml": "^5.4",
         "symfony/cache": "^5.4"
     },
     "require-dev": {
