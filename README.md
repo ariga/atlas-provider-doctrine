@@ -1,6 +1,9 @@
 # atlas-provider-doctrine
 
-Load [Doctrine 2](https://www.doctrine-project.org/) entities into an [Atlas](https://atlasgo.io) project.
+Load [Doctrine](https://www.doctrine-project.org/) entities into an [Atlas](https://atlasgo.io) project.
+
+### Requirements
+* [Dbal](https://www.doctrine-project.org/projects/doctrine-dbal/en/3.8/index.html) - `composer require doctrine/dbal:^3`
 
 ### Use-cases
 1. **Declarative migrations** - use a Terraform-like `atlas schema apply --env doctrine` to apply your Doctrine schema to the database.
@@ -17,7 +20,7 @@ See [atlasgo.io](https://atlasgo.io/getting-started#installation) for more insta
 
 Install the provider by running:
 ```bash
-composer require ariga/atlas-provider-doctrine:v2
+composer require ariga/atlas-provider-doctrine:^3
 ```
 
 #### Doctrine Console Command
