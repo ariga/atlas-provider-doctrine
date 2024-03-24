@@ -10,8 +10,8 @@ final class CommandTest extends TestCase
     public function testCommand(): void
     {
         $output = shell_exec("php tests/bin/doctrine atlas:dump-sql --dialect mysql --path ./tests/entities");
-        $expected = 'CREATE TABLE bugs (id INT AUTO_INCREMENT NOT NULL, engineer_id INT DEFAULT NULL, reporter_id INT DEFAULT NULL, description VARCHAR(255) NOT NULL, created DATETIME NOT NULL, status VARCHAR(255) NOT NULL, INDEX IDX_1E197C9F8D8CDF1 (engineer_id), INDEX IDX_1E197C9E1CFE6F5 (reporter_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE `utf8_unicode_ci` ENGINE = InnoDB;
-CREATE TABLE users (id INT AUTO_INCREMENT NOT NULL, name VARCHAR(255) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE `utf8_unicode_ci` ENGINE = InnoDB;
+        $expected = 'CREATE TABLE users (id INT AUTO_INCREMENT NOT NULL, name VARCHAR(255) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE `utf8_unicode_ci` ENGINE = InnoDB;
+CREATE TABLE bugs (id INT AUTO_INCREMENT NOT NULL, engineer_id INT DEFAULT NULL, reporter_id INT DEFAULT NULL, description VARCHAR(255) NOT NULL, created DATETIME NOT NULL, status VARCHAR(255) NOT NULL, INDEX IDX_1E197C9F8D8CDF1 (engineer_id), INDEX IDX_1E197C9E1CFE6F5 (reporter_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE `utf8_unicode_ci` ENGINE = InnoDB;
 ALTER TABLE bugs ADD CONSTRAINT FK_1E197C9F8D8CDF1 FOREIGN KEY (engineer_id) REFERENCES users (id);
 ALTER TABLE bugs ADD CONSTRAINT FK_1E197C9E1CFE6F5 FOREIGN KEY (reporter_id) REFERENCES users (id);
 ';
