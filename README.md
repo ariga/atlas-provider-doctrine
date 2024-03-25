@@ -73,7 +73,8 @@ env "doctrine" {
 
 #### As PHP Script
 
-If you have multiple folders with Doctrine entities, you might want to use the provider as a php script.
+If you have multiple folders with Doctrine entities, or if you use a [Symfony](https://symfony.com/) project,
+you might want to use the provider as a PHP script.
 
 create a new file named `atlas.php` with the following contents:
 
@@ -83,7 +84,8 @@ create a new file named `atlas.php` with the following contents:
 require "vendor/autoload.php";
 require "vendor/ariga/atlas-provider-doctrine/src/LoadEntities.php";
 
-print (DumpDDL(["./path/to/first/entities", "./path/to/more/entities"], "mysql"));
+// `DumpDDL` accepts an array of paths to your Doctrine entities and the database dialect(mysql | mariadb | postgres | sqlite | sqlserver).
+print (DumpDDL(["./src/Entity"], "mysql"));
 ```
 
 Then in your project directory, create a new file named `atlas.hcl` with the following contents:
