@@ -7,7 +7,7 @@ Load [Doctrine](https://www.doctrine-project.org/) entities into an [Atlas](http
 2. **Automatic migration planning** - use `atlas migrate diff --env doctrine` to automatically plan a migration from the current database version to the Doctrine schema.
 
 ### Requirements
-* [Dbal](https://www.doctrine-project.org/projects/doctrine-dbal/en/4.0/index.html) - `composer require doctrine/dbal:^4`
+* [DBAL](https://www.doctrine-project.org/projects/doctrine-dbal/en/4.0/index.html) - `composer require doctrine/dbal:^4`
 
 ### Installation
 
