@@ -16,7 +16,7 @@ data "external_schema" "doctrine" {
     "php",
     "tests/bin/doctrine",
     "atlas:dump-sql",
-    "--path", "tests/entities",
+    "--path", "tests/entities/regular",
     "--dialect", var.dialect,
   ]
 }

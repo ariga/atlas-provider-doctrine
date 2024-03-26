@@ -1,5 +1,7 @@
 <?php
 
+use Doctrine\ORM\Mapping\DefaultNamingStrategy;
+use Doctrine\ORM\Mapping\NamingStrategy;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -12,6 +14,16 @@ require "LoadEntities.php";
 // but without requiring a real database connection
 class AtlasCommand extends Command
 {
+    private NamingStrategy $namingStrategy;
+
+    public function __construct(NamingStrategy $namingStrategy=null)
+    {
+        if ($namingStrategy === null) {
+            $namingStrategy = new DefaultNamingStrategy();
+        }
+        $this->namingStrategy = $namingStrategy;
+        parent::__construct();
+    }
     protected function configure(): void
     {
         $dialects = DialectsMapping::getInstance()->getDialects();
@@ -38,7 +50,7 @@ class AtlasCommand extends Command
     {
         $ui = new SymfonyStyle($input, $output);
         try {
-            $sql = DumpDDL([$input->getOption('path')], $input->getOption('dialect'));
+            $sql = DumpDDL([$input->getOption('path')], $input->getOption('dialect'), $this->namingStrategy);
         } catch (Exception $e) {
             $ui->error($e->getMessage());
             return 1;

@@ -1,9 +1,10 @@
 <?php
 
-namespace entities;
+namespace entities\regular;
 
 use BugRepository;
 use Doctrine\ORM\Mapping as ORM;
+use entities\DateTime;
 use User;
 
 #[ORM\Entity(repositoryClass: BugRepository::class)]

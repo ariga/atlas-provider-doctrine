@@ -4,6 +4,7 @@ use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\DBAL\Platforms\MariaDBPlatform;
+use Doctrine\ORM\Mapping\NamingStrategy;
 use Doctrine\ORM\ORMSetup;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\DBAL\Schema\PostgreSQLSchemaManager;
@@ -103,7 +104,7 @@ class MockEntityManager extends EntityManager
 }
 
 // DumpDDL of the schema in the given path with the given dialect
-function DumpDDL(array $paths, string $dialect): string
+function DumpDDL(array $paths, string $dialect, NamingStrategy $namingStrategy = null): string
 {
     $drivers = DialectsMapping::getInstance()->getDialects();
     if (!in_array($dialect, array_keys($drivers))) {
@@ -121,6 +122,9 @@ function DumpDDL(array $paths, string $dialect): string
         paths: $paths,
         isDevMode: true,
     );
+    if ($namingStrategy !== null) {
+        $config->setNamingStrategy($namingStrategy);
+    }
     $driver = $drivers[$dialect];
     $connection = DriverManager::getConnection(
         [
