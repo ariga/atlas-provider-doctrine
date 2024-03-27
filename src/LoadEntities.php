@@ -5,7 +5,6 @@ use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\DBAL\Platforms\MariaDBPlatform;
-use Doctrine\ORM\Mapping\NamingStrategy;
 use Doctrine\ORM\ORMSetup;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\DBAL\Schema\PostgreSQLSchemaManager;

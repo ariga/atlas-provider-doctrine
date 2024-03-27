@@ -1,7 +1,10 @@
 <?php
 
+namespace Ariga;
+
 require_once "Command.php";
 
+use AtlasCommand;
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Symfony\Component\Console\Application;

@@ -1,7 +1,5 @@
 <?php
 
-require "src/AtlasDoctrineBundle.php";
-
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\EntityManager;
@@ -16,7 +14,7 @@ class BundleTest extends TestCase
     public function testRegisterCommandsNoConfig(): void
     {
         $container = new ContainerBuilder();
-        $bundle = new AtlasDoctrineBundle();
+        $bundle = new Ariga\AtlasDoctrineBundle();
         $bundle->setContainer($container);
         $application = new Application();
         $bundle->registerCommands($application);
@@ -53,7 +51,7 @@ class BundleTest extends TestCase
         $registry = new Registry($container, [], ['default' => 'doctrine.orm.default_entity_manager'], 'default', 'default');
 
         $container->set('doctrine', $registry);
-        $bundle = new AtlasDoctrineBundle();
+        $bundle = new Ariga\AtlasDoctrineBundle();
         $bundle->setContainer($container);
         $application = new Application();
         $bundle->registerCommands($application);
@@ -64,8 +62,6 @@ class BundleTest extends TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute([
             'command' => $command->getName(),
-            '--dialect' => 'mysql',
-            '--path' => 'tests/entities/uppercase'
         ]);
         $expected = "CREATE TABLE user_commands (id INT AUTO_INCREMENT NOT NULL, command VARCHAR(255) NOT NULL, PRIMARY KEY(id));\n";
         $this->assertEquals($expected, $commandTester->getDisplay());
