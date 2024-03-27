@@ -18,10 +18,10 @@ class BundleTest extends TestCase
         $bundle->setContainer($container);
         $application = new Application();
         $bundle->registerCommands($application);
-        $this->assertTrue($application->has('atlas:dump-sql'));
+        $this->assertTrue($application->has('atlas:schema'));
 
         // run the command to check if it works
-        $command = $application->find('atlas:dump-sql');
+        $command = $application->find('atlas:schema');
         $commandTester = new CommandTester($command);
         $commandTester->execute([
             'command' => $command->getName(),
@@ -55,10 +55,10 @@ class BundleTest extends TestCase
         $bundle->setContainer($container);
         $application = new Application();
         $bundle->registerCommands($application);
-        $this->assertTrue($application->has('atlas:dump-sql'));
+        $this->assertTrue($application->has('atlas:schema'));
 
         // run the command to check if it works with the underscore naming strategy
-        $command = $application->find('atlas:dump-sql');
+        $command = $application->find('atlas:schema');
         $commandTester = new CommandTester($command);
         $commandTester->execute([
             'command' => $command->getName(),
