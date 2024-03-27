@@ -23,7 +23,7 @@ class AtlasCommand extends Command
     protected function configure(): void
     {
         $dialects = DialectsMapping::getInstance()->getDialects();
-        $this->setName('atlas:dump-sql')
+        $this->setName('atlas:schema')
             ->addOption(
                 'dialect',
                 null,

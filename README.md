@@ -51,7 +51,7 @@ data "external_schema" "doctrine" {
   program = [
     "php",
     "bin/doctrine", // path to your Doctrine Console file
-    "atlas:dump-sql",
+    "atlas:schema",
     "--path", "./path/to/entities",
     "--dialect", "mysql" // mariadb | postgres | sqlite | sqlserver
   ]
@@ -96,7 +96,7 @@ data "external_schema" "doctrine" {
   program = [
     "php",
     "bin/console", 
-    "atlas:dump-sql"
+    "atlas:schema"
   ]
 }
 
