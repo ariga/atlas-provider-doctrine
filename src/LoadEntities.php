@@ -1,6 +1,8 @@
 <?php
 
+
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Schema\SchemaConfig;
@@ -104,7 +106,7 @@ class MockEntityManager extends EntityManager
 
 
 // DumpDDL of the schema in the given path with the given dialect
-function DumpDDL(array $paths, string $dialect): string
+function DumpDDL(array $paths, string $dialect, Configuration $config = null): string
 {
     $drivers = DialectsMapping::getInstance()->getDialects();
     if (!in_array($dialect, array_keys($drivers))) {
@@ -116,11 +118,12 @@ function DumpDDL(array $paths, string $dialect): string
             throw new \InvalidArgumentException('Invalid path: '.$path);
         }
     }
-
-    $config = ORMSetup::createAttributeMetadataConfiguration(
-        paths: $paths,
-        isDevMode: true,
-    );
+    if ($config == null) {
+        $config = ORMSetup::createAttributeMetadataConfiguration(
+            paths: $paths,
+            isDevMode: true,
+        );
+    }
     $driver = $drivers[$dialect];
     $connection = DriverManager::getConnection(
         ['driver' => $driver], $config

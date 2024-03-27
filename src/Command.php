@@ -1,5 +1,6 @@
 <?php
 
+use Doctrine\DBAL\Configuration;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -12,6 +13,13 @@ require "LoadEntities.php";
 // but without requiring a real database connection
 class AtlasCommand extends Command
 {
+    private ?Configuration $config;
+
+    public function __construct(Configuration $config = null)
+    {
+        $this->config = $config;
+        parent::__construct();
+    }
     protected function configure(): void
     {
         $dialects = DialectsMapping::getInstance()->getDialects();
@@ -38,7 +46,7 @@ class AtlasCommand extends Command
     {
         $ui = new SymfonyStyle($input, $output);
         try {
-            $sql = DumpDDL([$input->getOption('path')], $input->getOption('dialect'));
+            $sql = DumpDDL([$input->getOption('path')], $input->getOption('dialect'), $this->config);
         } catch (Exception $e) {
             $ui->error($e->getMessage());
             return 1;

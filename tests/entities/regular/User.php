@@ -1,6 +1,6 @@
 <?php
 
-namespace entities;
+namespace entities\regular;
 
 use Bug;
 use Doctrine\Common\Collections\Collection;

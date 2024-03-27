@@ -71,10 +71,52 @@ env "doctrine" {
 }
 ```
 
+#### As Symfony Bundle
+
+If you are using a [Symfony](https://symfony.com/) project, you can use the provider as a Symfony [bundle](https://symfony.com/doc/current/bundles.html).
+
+add the following bundle to your `config/bundles.php` file:
+
+```diff
+<?php
+
+require "vendor/autoload.php";
+
+return [
+    ...
++  Ariga\AtlasDoctrineBundle::class => ['all' => true],
+];
+
+```
+
+Then in your project directory, create a new file named `atlas.hcl` with the following contents:
+
+```hcl
+data "external_schema" "doctrine" {
+  program = [
+    "php",
+    "bin/console", 
+    "atlas:dump-sql"
+  ]
+}
+
+env "doctrine" {
+  src = data.external_schema.doctrine.url
+  dev = "docker://mysql/8/dev"
+  migration {
+    dir = "file://migrations"
+  }
+  format {
+    migrate {
+      diff = "{{ sql . \"  \" }}"
+    }
+  }
+}
+```
+
 #### As PHP Script
 
-If you have multiple folders with Doctrine entities, or if you use a [Symfony](https://symfony.com/) project,
-you might want to use the provider as a PHP script.
+If you have multiple folders with Doctrine entities, you might want to use the provider as a PHP script.
 
 create a new file named `atlas.php` with the following contents:
 
@@ -85,7 +127,7 @@ require "vendor/autoload.php";
 require "vendor/ariga/atlas-provider-doctrine/src/LoadEntities.php";
 
 // `DumpDDL` accepts an array of paths to your Doctrine entities and the database dialect(mysql | mariadb | postgres | sqlite | sqlserver).
-print (DumpDDL(["./src/Entity"], "mysql"));
+print (DumpDDL(["./path/to/first/entities", "./path/to/more/entities"], "mysql"));
 ```
 
 Then in your project directory, create a new file named `atlas.hcl` with the following contents:
