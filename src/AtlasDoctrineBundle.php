@@ -2,24 +2,25 @@
 
 require_once "Command.php";
 
-use Doctrine\ORM\Mapping\NamingStrategy;
+use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
+use Doctrine\Bundle\DoctrineBundle\Registry;
 use Symfony\Component\Console\Application;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 
-class AtlasDoctrineBundle extends Bundle
+class AtlasDoctrineBundle extends DoctrineBundle
 {
 
     public function registerCommands(Application $application): void
     {
-        $namingStrategy = $this->container->get('doctrine.orm.naming_strategy', ContainerInterface::NULL_ON_INVALID_REFERENCE);
-        if ($namingStrategy === null) {
+        $doctrine = $this->container->get('doctrine', ContainerInterface::NULL_ON_INVALID_REFERENCE);
+        if ($doctrine === null) {
             $application->add(new AtlasCommand());
             return;
         }
-        assert($namingStrategy instanceof NamingStrategy);
-        $application->add(new AtlasCommand($namingStrategy));
+        assert($doctrine instanceof Registry);
+        $em = $doctrine->getManager();
+        $config= $em->getConfiguration();
+        $application->add(new AtlasCommand($config));
     }
 }

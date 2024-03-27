@@ -2,6 +2,10 @@
 
 require "src/AtlasDoctrineBundle.php";
 
+use Doctrine\Bundle\DoctrineBundle\Registry;
+use Doctrine\DBAL\DriverManager;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\ORMSetup;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -32,9 +36,23 @@ class BundleTest extends TestCase
 
     public function testRegisterCommandsWithConfig(): void
     {
+        // create a configuration with the underscore naming strategy
+        $config = ORMSetup::createAttributeMetadataConfiguration(
+            paths: ['tests/entities/uppercase'],
+            isDevMode: true,
+        );
+        $config->setNamingStrategy(new Doctrine\ORM\Mapping\UnderscoreNamingStrategy());
+        $connection = DriverManager::getConnection(
+            [
+                'driver' => 'pdo_mysql'
+            ], $config
+        );
+        $entityManager = new EntityManager($connection, $config);
         $container = new ContainerBuilder();
-        $namingStrategy = new Doctrine\ORM\Mapping\UnderscoreNamingStrategy();
-        $container->set('doctrine.orm.naming_strategy', $namingStrategy);
+        $container->set('doctrine.orm.default_entity_manager', $entityManager);
+        $registry = new Registry($container, [], ['default' => 'doctrine.orm.default_entity_manager'], 'default', 'default');
+
+        $container->set('doctrine', $registry);
         $bundle = new AtlasDoctrineBundle();
         $bundle->setContainer($container);
         $application = new Application();
