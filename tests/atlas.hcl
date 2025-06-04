@@ -32,4 +32,10 @@ env "doctrine" {
       diff = "{{ sql . \"  \" }}"
     }
   }
+  diff {
+    skip {
+      # See this FAQ: https://atlasgo.io/faq/skip-constraint-rename
+      rename_constraint = true
+    }
+  }
 }
