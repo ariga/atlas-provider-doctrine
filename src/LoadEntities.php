@@ -132,5 +132,5 @@ function DumpDDL(array $paths, string $dialect, ?Configuration $config = null): 
     $entityManager = new MockEntityManager($connection, $config);
     $metadatas = $entityManager->getMetadataFactory()->getAllMetadata();
     $sql = (new SchemaTool($entityManager))->getCreateSchemaSql($metadatas);
-    return empty($sql) ? '' : implode(";\n", $sql) . ';';
+    return empty($sql) ? '' : implode(";\n", $sql) . ";\n";
 }

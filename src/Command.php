@@ -51,7 +51,7 @@ class AtlasCommand extends Command
             $ui->error($e->getMessage());
             return 1;
         }
-        $ui->writeln($sql);
+        $ui->write($sql);
         return 0;
     }
 };
