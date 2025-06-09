@@ -28,7 +28,7 @@ class BundleTest extends TestCase
             '--dialect' => 'mysql',
             '--path' => 'tests/entities/uppercase'
         ]);
-        $expected = "CREATE TABLE UserCommands (id INT AUTO_INCREMENT NOT NULL, command VARCHAR(255) NOT NULL, PRIMARY KEY(id));\n";
+        $expected = "-- atlas:pos UserCommands[type=table] tests/entities/uppercase/UserCommands.php:8:17\n\nCREATE TABLE UserCommands (id INT AUTO_INCREMENT NOT NULL, command VARCHAR(255) NOT NULL, PRIMARY KEY(id));\n";
         $this->assertEquals($expected, $commandTester->getDisplay());
     }
 
@@ -63,7 +63,7 @@ class BundleTest extends TestCase
         $commandTester->execute([
             'command' => $command->getName(),
         ]);
-        $expected = "CREATE TABLE user_commands (id INT AUTO_INCREMENT NOT NULL, command VARCHAR(255) NOT NULL, PRIMARY KEY(id));\n";
+        $expected = "-- atlas:pos user_commands[type=table] tests/entities/uppercase/UserCommands.php:8:17\n\nCREATE TABLE user_commands (id INT AUTO_INCREMENT NOT NULL, command VARCHAR(255) NOT NULL, PRIMARY KEY(id));\n";
         $this->assertEquals($expected, $commandTester->getDisplay());
     }
 }
