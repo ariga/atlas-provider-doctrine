@@ -5,6 +5,7 @@ use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\DBAL\Platforms\MariaDBPlatform;
+use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\ORM\ORMSetup;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\DBAL\Schema\PostgreSQLSchemaManager;
@@ -66,7 +67,6 @@ class MockPostgreSQLSchemaManager extends PostgreSQLSchemaManager
     }
 }
 
-
 // MockConnection to use Connection without connecting to a real database
 class MockConnection extends Connection
 {
@@ -81,14 +81,16 @@ class MockConnection extends Connection
 
     public function getDatabasePlatform(): AbstractPlatform
     {
-        $dialect = DialectsMapping::getInstance()->getCurrentDialect();
-        if ($dialect === 'mysql') {
+        switch (DialectsMapping::getInstance()->getCurrentDialect()) {
+        case 'mysql':
             return new MySQLPlatform();
-        }
-        if ($dialect === 'mariadb') {
+        case 'mariadb':
             return new MariaDBPlatform();
+        case 'postgres':
+            return new PostgreSQLPlatform();
+        default:
+            return parent::getDatabasePlatform();
         }
-        return parent::getDatabasePlatform();
     }
 }
 
@@ -104,17 +106,16 @@ class MockEntityManager extends EntityManager
 }
 
 // DumpDDL of the schema in the given path with the given dialect
-function DumpDDL(array $paths, string $dialect, Configuration $config = null): string
+function DumpDDL(array $paths, string $dialect, ?Configuration $config = null): string
 {
     $drivers = DialectsMapping::getInstance()->getDialects();
     if (!in_array($dialect, array_keys($drivers))) {
         throw new \InvalidArgumentException('Invalid dialect: '.$dialect);
     }
     DialectsMapping::getInstance()->setCurrentDialect($dialect);
-    for ($i = 0; $i < count($paths); $i++) {
-        $path = $paths[$i];
+    foreach ($paths as $path) {
         if (!is_dir($path)) {
-            throw new \InvalidArgumentException('Invalid path: '.$path);
+            throw new \InvalidArgumentException("Invalid path: $path");
         }
     }
     if ($config == null) {
@@ -123,19 +124,13 @@ function DumpDDL(array $paths, string $dialect, Configuration $config = null): s
             isDevMode: true,
         );
     }
-    $driver = $drivers[$dialect];
     $connection = DriverManager::getConnection(
         [
-        'driver' => $driver,
+        'driver' => $drivers[$dialect],
         ], $config
     );
     $entityManager = new MockEntityManager($connection, $config);
     $metadatas = $entityManager->getMetadataFactory()->getAllMetadata();
-
-    $schemaTool = new SchemaTool($entityManager);
-    $sql = $schemaTool->getCreateSchemaSql($metadatas);
-    if (count($sql) === 0) {
-        return '';
-    }
-    return implode(";\n", $sql).";";
+    $sql = (new SchemaTool($entityManager))->getCreateSchemaSql($metadatas);
+    return empty($sql) ? '' : implode(";\n", $sql) . ';';
 }
