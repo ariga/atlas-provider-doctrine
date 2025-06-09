@@ -15,7 +15,7 @@ class AtlasCommand extends Command
 {
     private ?Configuration $config;
 
-    public function __construct(Configuration $config = null)
+    public function __construct(?Configuration $config = null)
     {
         $this->config = $config;
         parent::__construct();
