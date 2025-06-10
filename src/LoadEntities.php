@@ -131,6 +131,32 @@ function DumpDDL(array $paths, string $dialect, ?Configuration $config = null): 
     );
     $entityManager = new MockEntityManager($connection, $config);
     $metadatas = $entityManager->getMetadataFactory()->getAllMetadata();
+    
+    $directives = [];
+    foreach ($metadatas as $metadata) {
+        $class = $metadata->getReflectionClass();
+        if (($file = $class->getFileName()) 
+            && ($start = $class->getStartLine()) 
+            && ($end = $class->getEndLine())
+        ) {
+            $relPath = str_replace(getcwd() . DIRECTORY_SEPARATOR, '', $file);
+            $relPath = str_replace(DIRECTORY_SEPARATOR, '/', $relPath);
+            $directives[] = sprintf(
+                '-- atlas:pos %s[type=table] %s:%d-%d',
+                $metadata->getTableName(),
+                $relPath,
+                $start,
+                $end
+            );
+        }
+    }
+    $output = '';
+    if (!empty($directives)) {
+        $output .= implode("\n", $directives) . "\n\n";
+    }
     $sql = (new SchemaTool($entityManager))->getCreateSchemaSql($metadatas);
-    return empty($sql) ? '' : implode(";\n", $sql) . ";\n";
+    if (!empty($sql)) {
+        $output .= implode(";\n", $sql) . ";\n";
+    }
+    return $output;
 }

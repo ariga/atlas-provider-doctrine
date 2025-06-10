@@ -1,3 +1,6 @@
+-- atlas:pos users[type=table] tests/entities/regular/User.php:11-28
+-- atlas:pos bugs[type=table] tests/entities/regular/Bug.php:12-33
+
 CREATE TABLE users (id INT AUTO_INCREMENT NOT NULL, name VARCHAR(255) NOT NULL, PRIMARY KEY(id));
 CREATE TABLE bugs (id INT AUTO_INCREMENT NOT NULL, description VARCHAR(255) NOT NULL, created DATETIME NOT NULL, status VARCHAR(255) NOT NULL, engineer_id INT DEFAULT NULL, reporter_id INT DEFAULT NULL, INDEX IDX_1E197C9F8D8CDF1 (engineer_id), INDEX IDX_1E197C9E1CFE6F5 (reporter_id), PRIMARY KEY(id));
 ALTER TABLE bugs ADD CONSTRAINT FK_1E197C9F8D8CDF1 FOREIGN KEY (engineer_id) REFERENCES users (id);
