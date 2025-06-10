@@ -142,7 +142,7 @@ function DumpDDL(array $paths, string $dialect, ?Configuration $config = null): 
             $relPath = str_replace(getcwd() . DIRECTORY_SEPARATOR, '', $file);
             $relPath = str_replace(DIRECTORY_SEPARATOR, '/', $relPath);
             $directives[] = sprintf(
-                '-- atlas:pos %s[type=table] %s:%d:%d',
+                '-- atlas:pos %s[type=table] %s:%d-%d',
                 $metadata->getTableName(),
                 $relPath,
                 $start,
