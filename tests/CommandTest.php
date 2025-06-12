@@ -11,7 +11,7 @@ final class CommandTest extends TestCase
      */
     public function testCommand(string $dialect, string $expectedFile): void
     {
-        $output = shell_exec("php tests/bin/doctrine atlas:schema --dialect $dialect --path ./tests/entities/regular");
+        $output = replaceCwd(shell_exec("php tests/bin/doctrine atlas:schema --dialect $dialect --path ./tests/entities/regular"));
         $expected = file_get_contents(__DIR__ . "/data/$expectedFile");
         $this->assertEquals($expected, $output);
     }
