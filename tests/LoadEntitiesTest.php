@@ -12,7 +12,7 @@ final class LoadEntitiesTest extends TestCase
     public function testDumpDDL(string $dialect, string $expectedFile): void
     {
         $path = __DIR__ . "/entities/regular";
-        $result = DumpDDL([$path], $dialect);
+        $result = replaceCwd(DumpDDL([$path], $dialect));
         $expected = file_get_contents(__DIR__ . "/data/$expectedFile");
         $this->assertEquals($expected, $result);
     }
@@ -41,4 +41,9 @@ final class LoadEntitiesTest extends TestCase
         $path = __DIR__ . "/entities/regular";
         DumpDDL([$path], "bad_dialect");
     }
+}
+
+function replaceCwd(string $text): string {
+    $escapedCwd = preg_quote(getcwd() . DIRECTORY_SEPARATOR, '/');
+    return preg_replace("/" . $escapedCwd . "/i", "", $text);
 }

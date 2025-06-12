@@ -29,7 +29,7 @@ class BundleTest extends TestCase
             '--path' => 'tests/entities/uppercase'
         ]);
         $expected = "-- atlas:pos UserCommands[type=table] tests/entities/uppercase/UserCommands.php:8-17\n\nCREATE TABLE UserCommands (id INT AUTO_INCREMENT NOT NULL, command VARCHAR(255) NOT NULL, PRIMARY KEY(id));\n";
-        $this->assertEquals($expected, $commandTester->getDisplay());
+        $this->assertEquals($expected, replaceCwd($commandTester->getDisplay()));
     }
 
     public function testRegisterCommandsWithConfig(): void
@@ -64,6 +64,6 @@ class BundleTest extends TestCase
             'command' => $command->getName(),
         ]);
         $expected = "-- atlas:pos user_commands[type=table] tests/entities/uppercase/UserCommands.php:8-17\n\nCREATE TABLE user_commands (id INT AUTO_INCREMENT NOT NULL, command VARCHAR(255) NOT NULL, PRIMARY KEY(id));\n";
-        $this->assertEquals($expected, $commandTester->getDisplay());
+        $this->assertEquals($expected, replaceCwd($commandTester->getDisplay()));
     }
 }

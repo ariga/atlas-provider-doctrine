@@ -132,6 +132,13 @@ function DumpDDL(array $paths, string $dialect, ?Configuration $config = null): 
     $entityManager = new MockEntityManager($connection, $config);
     $metadatas = $entityManager->getMetadataFactory()->getAllMetadata();
     
+    // Sort metadata by table name to ensure consistent ordering
+    usort(
+        $metadatas, function ($a, $b) {
+            return strcmp($a->getTableName(), $b->getTableName());
+        }
+    );
+    
     $directives = [];
     foreach ($metadatas as $metadata) {
         $class = $metadata->getReflectionClass();
@@ -139,12 +146,10 @@ function DumpDDL(array $paths, string $dialect, ?Configuration $config = null): 
             && ($start = $class->getStartLine()) 
             && ($end = $class->getEndLine())
         ) {
-            $relPath = str_replace(getcwd() . DIRECTORY_SEPARATOR, '', $file);
-            $relPath = str_replace(DIRECTORY_SEPARATOR, '/', $relPath);
             $directives[] = sprintf(
                 '-- atlas:pos %s[type=table] %s:%d-%d',
                 $metadata->getTableName(),
-                $relPath,
+                $file,
                 $start,
                 $end
             );
