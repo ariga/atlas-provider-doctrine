@@ -132,6 +132,11 @@ function DumpDDL(array $paths, string $dialect, ?Configuration $config = null): 
     $entityManager = new MockEntityManager($connection, $config);
     $metadatas = $entityManager->getMetadataFactory()->getAllMetadata();
     
+    // Sort metadata by table name to ensure consistent ordering
+    usort($metadatas, function($a, $b) {
+        return strcmp($a->getTableName(), $b->getTableName());
+    });
+    
     $directives = [];
     foreach ($metadatas as $metadata) {
         $class = $metadata->getReflectionClass();
