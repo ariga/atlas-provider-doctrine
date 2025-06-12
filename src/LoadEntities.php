@@ -133,9 +133,11 @@ function DumpDDL(array $paths, string $dialect, ?Configuration $config = null): 
     $metadatas = $entityManager->getMetadataFactory()->getAllMetadata();
     
     // Sort metadata by table name to ensure consistent ordering
-    usort($metadatas, function($a, $b) {
-        return strcmp($a->getTableName(), $b->getTableName());
-    });
+    usort(
+        $metadatas, function ($a, $b) {
+            return strcmp($a->getTableName(), $b->getTableName());
+        }
+    );
     
     $directives = [];
     foreach ($metadatas as $metadata) {
